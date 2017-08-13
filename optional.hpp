@@ -97,6 +97,14 @@
 #   define OPTIONAL_MUTABLE_CONSTEXPR constexpr
 # endif
 
+# ifndef OPTIONAL_THROW_OR_ABORT
+#   if __cpp_exceptions
+#     define OPTIONAL_THROW_OR_ABORT(_EXC) (throw (_EXC))
+#   else
+#     define OPTIONAL_THROW_OR_ABORT(_EXC) (__builtin_abort())
+#   endif
+# endif
+
 namespace std{
 
 namespace experimental{
@@ -524,15 +532,15 @@ public:
   }
 
   constexpr T const& value() const& {
-    return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
+    return initialized() ? contained_val() : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access"), contained_val()));
   }
   
   OPTIONAL_MUTABLE_CONSTEXPR T& value() & {
-    return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
+    return initialized() ? contained_val() : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access"), contained_val()));
   }
   
   OPTIONAL_MUTABLE_CONSTEXPR T&& value() && {
-    if (!initialized()) throw bad_optional_access("bad optional access");
+    if (!initialized()) OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access"));
 	return std::move(contained_val());
   }
   
@@ -553,11 +561,11 @@ public:
   }
   
   constexpr T const& value() const {
-    return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
+    return initialized() ? contained_val() : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access")), contained_val());
   }
   
   T& value() {
-    return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
+    return initialized() ? contained_val() : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access")), contained_val());
   }
   
 # endif
@@ -688,7 +696,7 @@ public:
   }
   
   constexpr T& value() const {
-    return ref ? *ref : (throw bad_optional_access("bad optional access"), *ref);
+    return ref ? *ref : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access")), *ref);
   }
   
   explicit constexpr operator bool() const noexcept {
