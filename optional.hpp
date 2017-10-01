@@ -532,11 +532,11 @@ public:
   }
 
   constexpr T const& value() const& {
-    return initialized() ? contained_val() : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access"), contained_val()));
+    return initialized() ? contained_val() : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access")), contained_val());
   }
   
   OPTIONAL_MUTABLE_CONSTEXPR T& value() & {
-    return initialized() ? contained_val() : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access"), contained_val()));
+    return initialized() ? contained_val() : (OPTIONAL_THROW_OR_ABORT(bad_optional_access("bad optional access")), contained_val());
   }
   
   OPTIONAL_MUTABLE_CONSTEXPR T&& value() && {
